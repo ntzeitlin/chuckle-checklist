@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import "./App.css"
-import { addJoke, getAllJokes } from "../services/jokeService"
+import { addJoke, delData, getAllJokes, putData } from "../services/jokeService"
 import stevePic from "./assets/steve.png"
 
 export const App = () => {
@@ -9,11 +9,38 @@ export const App = () => {
   const [untoldJokes, setUntoldJokes] = useState([])
   const [toldJokes, setToldJokes] = useState([])
 
-  // set all jokes
-  useEffect(() => {
+  const numToldJokes = toldJokes.length
+  const numUntoldJokes = untoldJokes.length
+
+
+  const getAndSetJokes = () => {
     getAllJokes().then((jokeArray) => {
       setAllJokes(jokeArray)
     })
+  }
+
+  const handleTellUntell = (event) => {
+    if (event.target.name = "telluntellbutton") {
+      console.log(event.target.value, "clicked")
+      const dataToPut = allJokes.find((joke) => joke.id === parseInt(event.target.value))
+      dataToPut.told = !dataToPut.told
+      putData(dataToPut, `http://localhost:8088/jokes/${dataToPut.id}`)
+      getAndSetJokes()
+    }
+  }
+
+  const handleDelete = (event) => {
+    if (event.target.name === "deletebutton") {
+      const targetJoke = event.target.value
+      delData(targetJoke)
+      getAndSetJokes()
+    }
+  }
+
+  // INITIALIZE STATE
+  // set all jokes
+  useEffect(() => {
+    getAndSetJokes()
   }, [])
 
   // set untold and told jokes
@@ -33,7 +60,7 @@ export const App = () => {
       </div>
       <h1 className="app-heading-text">Chuckle Checklist</h1>
     </div>
-    <div><h2>Add Joke</h2></div>
+    <h2>Add Joke</h2>
     <div className="joke-add-form">
       <input
         id="jokeinput"
@@ -59,13 +86,45 @@ export const App = () => {
               }
             )
             setUserInput("")
+            getAndSetJokes()
           }
         }
         }
       >
-
         Add
       </button>
+    </div>
+    <div className="joke-lists-container">
+      <div className="joke-list-container">
+        <h2>Untold<span className="untold-count">{numUntoldJokes}</span></h2>
+        <ul>
+          {untoldJokes.map((joke) => {
+            return (
+              <li className="joke-list-item" key={joke.id}>
+                <p className="joke-list-item-text">{joke.text}</p>
+                <button className="joke-list-action-delete" name="deletebutton" value={joke.id} onClick={handleDelete}>del</button>
+                <button className="joke-list-action-toggle" name="telluntellbutton" onClick={handleTellUntell} value={joke.id}>Tell</button>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+      <div className="joke-list-container">
+        <h2>Told<span className="told-count">{numToldJokes}</span></h2>
+        <ul>
+          {toldJokes.map((joke) => {
+            return (
+              <li className="joke-list-item" key={joke.id}>
+                <p className="joke-list-item-text">{joke.text}</p>
+                <button className="joke-list-action-delete" name="deletebutton" value={joke.id} onClick={handleDelete}>del</button>
+                <button className="joke-list-action-toggle" name="telluntellbutton" onClick={handleTellUntell} value={joke.id}>Untell</button>
+
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+
     </div>
   </div>
 }
