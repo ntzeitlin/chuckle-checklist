@@ -21,7 +21,6 @@ export const App = () => {
 
   const handleTellUntell = (event) => {
     if (event.target.name = "telluntellbutton") {
-      console.log(event.target.value, "clicked")
       const dataToPut = allJokes.find((joke) => joke.id === parseInt(event.target.value))
       dataToPut.told = !dataToPut.told
       putData(dataToPut, `http://localhost:8088/jokes/${dataToPut.id}`)
