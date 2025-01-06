@@ -11,3 +11,9 @@ const postData = async (data, url) => {
 export const addJoke = async (jokeText) => {
     postData(jokeText, "http://localhost:8088/jokes")
 }
+
+export const getAllJokes = async () => {
+    const response = await fetch("http://localhost:8088/jokes")
+    const data = await response.json()
+    return data
+}
